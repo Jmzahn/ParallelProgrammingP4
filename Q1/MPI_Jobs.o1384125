@@ -1,0 +1,29 @@
+-catch_rsh /export/uge/default/spool/compute-6-11/compute-6-11/active_jobs/1384125.1/pe_hostfile
+Testing mpi_matrixmul.exe -np 1 ...
+Execution Time is 17.412557 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 1 ...
+Execution Time is 8.565669 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 2 ...
+Execution Time is 13.049902 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 4 ...
+Execution Time is 12.981799 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 8 ...
+Execution Time is 12.707978 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 16 ...
+Execution Time is 12.993714 (seconds)
+###
+
+Testing mpi_matrixmul.exe -np 2 -npernode 32 ...
+Execution Time is 12.699472 (seconds)
+###
+

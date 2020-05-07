@@ -21,6 +21,9 @@ module load intel openmpi
 echo "Testing mpi_matrixmul.exe -np 1 ..."
 mpirun --machinefile machinefile.$JOB_ID -np 1 ./mpi_matrixmul.exe 2000
 echo -e "###\n"
+echo "Testing mpi_matrixmul.exe -np 2 -npernode 1 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 1 ./mpi_matrixmul.exe 2000
+echo -e "###\n"
 echo "Testing mpi_matrixmul.exe -np 2 -npernode 2 ..."
 mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 2 ./mpi_matrixmul.exe 2000
 echo -e "###\n"
