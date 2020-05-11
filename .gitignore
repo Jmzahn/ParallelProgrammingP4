@@ -168,3 +168,12 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/c,code,python
+
+./Q2/core.*
+./Q2/machinefile.*
+./Q2/partA
+./Q2/partA.exe
+./Q2/partA.o
+./Q2/partB
+./Q2/partB.exe
+./Q2/partB.o
