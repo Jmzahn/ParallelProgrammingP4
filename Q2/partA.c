@@ -88,11 +88,9 @@ int main(int argc, char *argv[]) {
     // everyone gets B
     //MPI_Bcast(B[0], N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (myrank == 0){
-        offset = stripSize;
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(&B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
-            offset += stripSize;
+            MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else{
@@ -105,7 +103,7 @@ int main(int argc, char *argv[]) {
     //}
 
     // do the work
-    for (k = 0; k<stripSize; k++) {
+    for (k = myrank; k<N; k+= numnodes) {
         for (i = k+1; i<N; i++){
             A[i][k] /= A[k][k];
             B[i] -= A[i][k]*B[k];
@@ -132,11 +130,9 @@ int main(int argc, char *argv[]) {
     }
     //Send B
     if (myrank == 0){
-        offset = stripSize; 
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(&B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            offset += stripSize;
+            MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else{
