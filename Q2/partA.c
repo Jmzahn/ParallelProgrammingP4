@@ -6,16 +6,18 @@
 #define TAG 13
 
 int main(int argc, char *argv[]) {
-    double **A, *B, *X, *tmp;
+    double **A, *B, *X, *tmp, sum=0.0;
     double startTime, endTime;
     int numElements, offset, stripSize, myrank, numnodes, N, i, j, k;
-    
+    MPI_Status status;
     MPI_Init(&argc, &argv);
     
     MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     
     N = atoi(argv[1]);
+    double mult[N];
+    double workMap[N];
 
     // allocate A, B, and C --- note that you want these to be
     // contiguously allocated.  Workers need less memory allocated.
@@ -74,8 +76,6 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-
-    
     // start timer
     if (myrank == 0) {
         startTime = MPI_Wtime();
@@ -83,15 +83,13 @@ int main(int argc, char *argv[]) {
 
     // send each node its piece of A -- note could be done via MPI_Scatter
     if (myrank == 0) {
-        offset = stripSize;
-        numElements = stripSize * N;
+        numElements = N * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(A[stripSize], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
-            offset += stripSize;
+            MPI_Send(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else {  // receive my part of A
-        MPI_Recv(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
     // everyone gets B
@@ -99,63 +97,81 @@ int main(int argc, char *argv[]) {
     if (myrank == 0){
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(B, numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else{
-        MPI_Recv(B, stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    
+    // do the work
+    for(i = 0; i < N; i++){
+        workMap[i] = i % numnodes;
     }
 
-    // Let each process initialize X to zero 
-    //for (i=0; i<stripSize; i++) {
-    //    X[i] = 0.0;
-    //}
-
-    // do the work
-    for (k = myrank; k<N; k+= numnodes) {
-        for (i = k+1; i<N; i++){
-            A[i][k] /= A[k][k];
-            B[i] -= A[i][k]*B[k];
-        }
-        for (i = k+1; i<N; i++) {
-            for (j = k+1; j<N; j++) {
-            	A[i][j] -= A[i][k] * A[k][j];
+    for(k = 0; k < N; k++){
+        MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        for(i= k+1; i < N; i++){
+            if(workMap[i] == myrank){
+                mult[i] = A[i][k]/A[k][k];
             }
         }
-        MPI_Barrier(MPI_COMM_WORLD);
+        for(i = k+1; i < N; i++){
+            if(workMap[i] == myrank){
+                for(j = 0; j < N; j++){
+                    A[i][j] -= mult[i]*A[k][j];
+                }
+                b[i]-= mult[i]*b[k];
+            }
+            
+        }
     }
+
+
+    //for (k = myrank; k<N; k+= numnodes) {
+    //    for (i = k+1; i<N; i++){
+    //        A[i][k] /= A[k][k];
+    //        B[i] -= A[i][k]*B[k];
+    //    }
+    //    for (i = k+1; i<N; i++) {
+    //        for (j = k+1; j<N; j++) {
+    //        	A[i][j] -= A[i][k] * A[k][j];
+    //        }
+    //    }
+    //    MPI_Barrier(MPI_COMM_WORLD);
+    //}
 
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
-        offset = stripSize;
-        numElements = stripSize * N;
+        numElements = N * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(A[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            offset += stripSize;
+            MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else { // send my contribution to A
-        MPI_Send(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
     //Send B
     if (myrank == 0){
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(B, numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else{
-        MPI_Send(B, stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
 
     //master does back prop
     if(myrank == 0){
-        for(i = N-1; i >= 0; i--){
-            X[i] = B[i];
+        X[N-1]=B[N-1]/A[N-1][N-1]
+        for(i = N-2; i >= 0; i--){
+            sum=0.0;
             for(j = i+1; j < N; j++){
-                X[i] -= A[i][j] * X[j];
+                sum+=A[i][j]*X[j];
             }
-            X[i] /= A[i][i];
+            X[i] = (B[i]-sum)/A[i][i];
         }
     }
 
