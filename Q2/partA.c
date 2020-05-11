@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
                 for(j = 0; j < N; j++){
                     A[i][j] -= mult[i]*A[k][j];
                 }
-                b[i]-= mult[i]*b[k];
+                B[i]-= mult[i]*B[k];
             }
             
         }
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]) {
 
     //master does back prop
     if(myrank == 0){
-        X[N-1]=B[N-1]/A[N-1][N-1]
+        X[N-1]=B[N-1]/A[N-1][N-1];
         for(i = N-2; i >= 0; i--){
             sum=0.0;
             for(j = i+1; j < N; j++){
