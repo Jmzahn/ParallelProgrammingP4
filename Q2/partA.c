@@ -91,12 +91,12 @@ int main(int argc, char *argv[]) {
         offset = stripSize;
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            MPI_Send(&B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
             offset += stripSize;
         }
     }
     else{
-        MPI_Recv(B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     // Let each process initialize X to zero 
@@ -135,12 +135,12 @@ int main(int argc, char *argv[]) {
         offset = stripSize; 
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&B[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             offset += stripSize;
         }
     }
     else{
-        MPI_Send(B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
 
     if(myrank == 0){
