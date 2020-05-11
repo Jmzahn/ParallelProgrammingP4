@@ -74,15 +74,13 @@ int main(int argc, char *argv[]) {
 
     // send each node its piece of A -- note could be done via MPI_Scatter
     if (myrank == 0) {
-        offset = stripSize;
-        numElements = stripSize * N;
+        numElements = stripSize * N * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(A[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
-            offset += stripSize;
+            MPI_Send(A[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else {  // receive my part of A
-        MPI_Recv(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(A[0], stripSize * N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
     // everyone gets B
@@ -117,16 +115,14 @@ int main(int argc, char *argv[]) {
     }
 
     // master receives A from workers  -- note could be done via MPI_Gather
-    if (myrank == 0) {
-        offset = stripSize; 
-        numElements = stripSize * N;
+    if (myrank == 0){
+        numElements = stripSize * N * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(A[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-            offset += stripSize;
+            MPI_Recv(A[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else { // send my contribution to A
-        MPI_Send(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(A[0], stripSize * N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
     //Send B
     if (myrank == 0){
