@@ -37,14 +37,14 @@ int main(int argc, char *argv[]) {
     tmp = (double *) malloc (sizeof(double ));
     B = (double *) malloc (sizeof(double *) * N);
     for (i = 0; i < N; i++)
-        B[i] = &tmp[i];
+        B[i] = tmp[i];
     
     
     if (myrank == 0) {
         tmp = (double *) malloc (sizeof(double ));
         X = (double *) malloc (sizeof(double *) * N);
         for (i = 0; i < N; i++)
-            X[i] = &tmp[i];
+            X[i] = tmp[i];
             X[i] = 0.0;
     }
     //else {
