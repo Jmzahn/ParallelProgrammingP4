@@ -19,23 +19,23 @@ module load intel openmpi
 
 
 echo "Testing partA.exe -np 1 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 1 ./mpi_matrixmul.exe 2000
+mpirun --machinefile machinefile.$JOB_ID -np 1 ./partA.exe 2000
 echo -e "###\n"
 echo "Testing partA.exe -np 2 -npernode 1 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 1 ./mpi_matrixmul.exe 2000
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 1 ./partA.exe 2000
 echo -e "###\n"
-echo "Testing mpi_matrixmul.exe -np 2 -npernode 2 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 2 ./mpi_matrixmul.exe 2000
+echo "Testing partA.exe -np 2 -npernode 2 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 2 ./partA.exe 2000
 echo -e "###\n"
-echo "Testing mpi_matrixmul.exe -np 2 -npernode 4 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 4 ./mpi_matrixmul.exe 2000
+echo "Testing partA.exe -np 2 -npernode 4 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 4 ./partA.exe 2000
 echo -e "###\n"
-echo "Testing mpi_matrixmul.exe -np 2 -npernode 8 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 8 ./mpi_matrixmul.exe 2000
+echo "Testing partA.exe -np 2 -npernode 8 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 8 ./partA.exe 2000
 echo -e "###\n"
-echo "Testing mpi_matrixmul.exe -np 2 -npernode 16 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 16 ./mpi_matrixmul.exe 2000
+echo "Testing partA.exe -np 2 -npernode 16 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 16 ./partA.exe 2000
 echo -e "###\n"
-echo "Testing mpi_matrixmul.exe -np 2 -npernode 32 ..."
-mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 32 ./mpi_matrixmul.exe 2000
+echo "Testing partA.exe -np 2 -npernode 32 ..."
+mpirun --machinefile machinefile.$JOB_ID -np 2 -npernode 32 ./partA.exe 2000
 echo -e "###\n"
