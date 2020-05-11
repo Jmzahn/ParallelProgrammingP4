@@ -64,23 +64,34 @@ int main(int argc, char *argv[]) {
             B[i] = (float)rand() / 32768.0;
         }
     }
+
+    stripSize = N/numnodes;
+    if(N % numnodes != 0){
+        MPI_Finalize();
+        if(myrank == 0){
+            printf("Input size is not divisible by No of nodes!\n");
+        }
+        exit(-1);
+    }
+
+
     
     // start timer
     if (myrank == 0) {
         startTime = MPI_Wtime();
     }
-    
-    stripSize = N/numnodes;
 
     // send each node its piece of A -- note could be done via MPI_Scatter
     if (myrank == 0) {
-        numElements = N * N;
+        offset = stripSize;
+        numElements = stripSize * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(A[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            MPI_Send(A[stripSize], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            offset += stripSize;
         }
     }
     else {  // receive my part of A
-        MPI_Recv(A[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
     // everyone gets B
@@ -88,11 +99,11 @@ int main(int argc, char *argv[]) {
     if (myrank == 0){
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            MPI_Send(B, numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else{
-        MPI_Recv(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(B, stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
     // Let each process initialize X to zero 
@@ -116,25 +127,27 @@ int main(int argc, char *argv[]) {
 
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
-        numElements = N * N;
+        offset = stripSize;
+        numElements = stripSize * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(A[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(A[offset], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            offset += stripSize;
         }
     }
     else { // send my contribution to A
-        MPI_Send(A[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(A[0], stripSize * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
     //Send B
     if (myrank == 0){
         numElements = stripSize;
         for (i=1; i<numnodes; i++) {
-            MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(B, numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else{
-        MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(B, stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
-    
+
     //master does back prop
     if(myrank == 0){
         for(i = N-1; i >= 0; i--){
