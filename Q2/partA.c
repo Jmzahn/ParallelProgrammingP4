@@ -134,7 +134,8 @@ int main(int argc, char *argv[]) {
     else{
         MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
-
+    
+    //master does back prop
     if(myrank == 0){
         for(i = N-1; i >= 0; i--){
             X[i] = B[i];
