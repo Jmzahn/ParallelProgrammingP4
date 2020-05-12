@@ -1,0 +1,76 @@
+-catch_rsh /export/uge/default/spool/compute-1-35/compute-1-35/active_jobs/1387333.1/pe_hostfile
+Testing partB.exe -np 1 ...
+stripSize: 2048
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting back prop.
+Execution Time is 1.929339 (seconds)
+###
+
+Testing partB.exe -np 2 ...
+stripSize: 1024
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 1.651401 (seconds)
+###
+
+Testing partB.exe -np 4 ...
+stripSize: 512
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.585626 (seconds)
+###
+
+Testing partB.exe -np 8 ...
+stripSize: 256
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.422022 (seconds)
+###
+
+Testing partB.exe -np 16 ...
+stripSize: 128
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.270074 (seconds)
+###
+
+Testing partB.exe -np 32 ...
+stripSize: 64
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.245653 (seconds)
+###
+
+Testing partB.exe -np 64 ...
+stripSize: 32
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.208228 (seconds)
+###
+

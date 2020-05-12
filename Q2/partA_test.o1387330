@@ -1,0 +1,143 @@
+-catch_rsh /export/uge/default/spool/compute-4-43/compute-4-43/active_jobs/1387330.1/pe_hostfile
+Testing partA.exe -np 1 ...
+
+A:
+17228.326172 49311.636719 16222.104492 19192.306641 
+22836.447266 56719.910156 8316.580078 7514.321289 
+33438.585938 46499.843750 15885.593750 19607.669922 
+28930.216797 41284.429688 21279.697266 18915.042969 
+
+B:
+25806.767578 60778.964844 39050.089844 29303.033203 
+
+stripSize: 4
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting back prop.
+Execution Time is 0.000064 (seconds)
+
+X:
+1.017058 0.931641 -0.277924 -1.727133 
+
+###
+
+Testing partA.exe -np 2 ...
+
+A:
+64697.097656 5612.036133 56422.925781 61743.074219 
+19640.679688 39214.132812 14883.939453 48298.320312 
+2712.666016 3062.101807 36733.152344 60126.621094 
+24850.945312 715.239502 57147.164062 12921.581055 
+
+B:
+17713.990234 39958.785156 38988.390625 19150.791016 
+
+stripSize: 2
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.000162 (seconds)
+
+X:
+-0.547759 0.672672 0.488378 0.353427 
+
+###
+
+Testing partA.exe -np 4 ...
+
+A:
+13323.028320 59909.203125 63405.539062 38107.625000 
+48701.191406 20927.845703 20969.691406 55732.167969 
+36917.855469 57264.777344 23704.726562 1581.774170 
+52228.800781 57496.742188 59375.199219 5383.979492 
+
+B:
+42005.171875 50974.410156 38167.906250 7804.950195 
+
+stripSize: 1
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.000184 (seconds)
+
+X:
+-0.048228 0.662509 -0.489589 0.892210 
+
+###
+
+Testing partA.exe -np 8 ...
+
+A:
+27231.445312 15396.688477 4467.790039 46948.214844 32937.687500 11743.466797 2302.241211 59136.710938 
+61591.742188 4792.043945 12414.131836 42971.953125 40424.164062 3651.863525 13504.803711 47688.691406 
+62698.050781 28019.824219 46565.839844 57303.269531 53818.933594 26671.802734 27365.792969 43649.898438 
+29873.943359 31240.593750 44530.363281 12087.425781 58472.039062 59927.050781 16555.216797 39884.253906 
+28298.681641 42186.496094 20929.449219 58094.218750 38242.238281 25721.494141 4972.349609 15678.190430 
+8624.212891 29182.994141 48298.351562 3548.817871 26345.046875 10782.175781 50114.660156 18112.316406 
+11250.462891 45478.109375 42715.007812 62872.152344 9816.052734 8419.601562 41866.515625 21903.478516 
+36257.566406 38458.695312 41239.898438 63586.308594 1221.377563 17890.394531 18979.755859 59315.593750 
+
+B:
+29795.535156 60460.605469 51621.691406 27328.740234 609.659424 64601.109375 1355.642334 56132.632812 
+
+stripSize: 1
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.000425 (seconds)
+
+X:
+0.959723 4.017074 -6.427713 6.830662 0.878488 0.843458 3.731822 -6.723244 
+
+###
+
+Testing partA.exe -np 16 ...
+stripSize: 1
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.001030 (seconds)
+###
+
+Testing partA.exe -np 32 ...
+stripSize: 1
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.004904 (seconds)
+###
+
+Testing partA.exe -np 64 ...
+stripSize: 1
+Starting initital communication.
+Made workMap.
+Done with initital communication.
+Starting work.
+Starting final communication.
+Done with final communication.
+Starting back prop.
+Execution Time is 0.012078 (seconds)
+###
+
