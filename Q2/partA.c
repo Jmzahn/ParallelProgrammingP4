@@ -156,8 +156,30 @@ int main(int argc, char *argv[]) {
                 B[i] = B[i]- mult*B[k];
             }
         }
-        MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
-        MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        // worker sends A[k][k]->N-k -- note could be done via MPI_Bcast
+        if(myrank==workMap[k]){
+            for(i=0; i<numnodes; i++){
+                if(i!=myrank){
+                    MPI_Send(&(A[k][k]), N-k, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+                }
+            }
+        }
+        else{// everyone else recieves updated A[k][k]->N-k from worker
+            MPI_Recv(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+        // worker sends B[k] -- note could be done via MPI_Bcast
+        if(myrank==workMap[k]){
+            for(i=0; i<numnodes; i++){
+                if(i!=myrank){
+                    MPI_Send(&B[k], 1, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+                }
+            }
+        }
+        else{// everyone else recieves updated B[k] from worker
+            MPI_Recv(&B[k], 1, MPI_DOUBLE, workMap[k], TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        }
+        //MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        //MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
     }
 
     // only share final work if running in parallel
