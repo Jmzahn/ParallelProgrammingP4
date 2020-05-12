@@ -2,7 +2,7 @@
 #$ -V
 #$ -cwd
 #$ -S /bin/bash
-#$ -N partA_2048
+#$ -N partB_2048
 #$ -o $JOB_NAME.o$JOB_ID
 #$ -e $JOB_NAME.e$JOB_ID
 #$ -q omni
