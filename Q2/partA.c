@@ -170,32 +170,32 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
 
     // master receives A from workers  -- note could be done via MPI_Gather
-    if (myrank == 0){
-        printf("Starting final communication.\n");
-        numElements = N * N;
-        for (i=1; i<numnodes; i++) {
-            MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    }
-    else { // send my contribution to A
-        MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    }
+    //if (myrank == 0){
+    //    printf("Starting final communication.\n");
+    //    numElements = N * N;
+    //    for (i=1; i<numnodes; i++) {
+    //        MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    //    }
+    //}
+    //else { // send my contribution to A
+    //    MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+    //}
 
-    //Send B
-    if (myrank == 0){
-        numElements = N;
-        for (i=1; i<numnodes; i++) {
-            MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        }
-    }
-    else{
-        MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    }
+    ////Send B
+    //if (myrank == 0){
+    //    numElements = N;
+    //    for (i=1; i<numnodes; i++) {
+    //        MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    //    }
+    //}
+    //else{
+    //    MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+    //}
 
-    //announce end of communication
-    if(myrank == 0){
-        printf("Done with final communication.\nStarting back prop.\n");
-    }
+    ////announce end of communication
+    //if(myrank == 0){
+    //    printf("Done with final communication.\nStarting back prop.\n");
+    //}
 
     //master does back prop
     if(myrank == 0){
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
     }
     free(&workMap[0]);
 
-    
+
     MPI_Finalize();
     return 0;
 }
