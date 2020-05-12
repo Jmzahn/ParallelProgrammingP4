@@ -128,7 +128,7 @@ int main(int argc, char *argv[]) {
     }
     
     // do the work
-    printf("%d: numnodes: %d\n",myrank,numnodes);
+    //printf("%d: numnodes: %d\n",myrank,numnodes);
     if(myrank == 0){
         for(i = 0; i < N; i++){
             workMap[i] = i % numnodes;
@@ -140,10 +140,10 @@ int main(int argc, char *argv[]) {
 
     double mult = 0.0;
     for(k = 0; k < N-1; k++){
-        if(myrank == 0){
-            printf("Iteration %d\n",k);
-        }
-        printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
+        //if(myrank == 0){
+        //    printf("Iteration %d\n",k);
+        //}
+        //printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
         MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         for(i = k+1; i < N; i++){
