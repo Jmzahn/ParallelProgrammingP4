@@ -43,10 +43,6 @@ int main(int argc, char *argv[]) {
             X[i] = tmp[i];
             X[i] = 0.0;
     }
-
-    //free memory
-    free(tmp);
-    free(inttmp);
     
     //Fill A and B with random data
     if (myrank == 0) {
@@ -73,6 +69,7 @@ int main(int argc, char *argv[]) {
         for (i=0; i<N; i++) {
             printf("%f ", B[i]);
         }
+        printf("\n");
     }
 
     //Make sure work can be evenly handed out
@@ -219,15 +216,6 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-
-    //free memory
-    free(&A[0]);
-    free(A);
-    free(&B[0]);
-    if (myrank==0){
-        free(&X[0]);
-    }
-    free(&workMap[0]);
 
 
     MPI_Finalize();
