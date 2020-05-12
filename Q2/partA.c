@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 
     //Print inputs if N<10
     if (myrank == 0 && N < 10) {
-        printf("A:\n");
+        printf("\nA:\n");
         for (i=0; i<N; i++) {
             for(j=0; j<N; j++){
                 printf("%f ", A[i][j]);
@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
         for (i=0; i<N; i++) {
             printf("%f ", B[i]);
         }
-        printf("\n");
+        printf("\n\n");
     }
 
     //Make sure work can be evenly handed out
@@ -211,10 +211,11 @@ int main(int argc, char *argv[]) {
     
     // print out matrix here, if I'm the master
     if (myrank == 0 && N < 10) {
+        printf("\nX:\n");
         for (i=0; i<N; i++) {
             printf("%f ", X[i]);
         }
-        printf("\n");
+        printf("\n\n");
     }
 
 
