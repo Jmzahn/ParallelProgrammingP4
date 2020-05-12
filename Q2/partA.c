@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     
     N = atoi(argv[1]);
-    double *mult;
+    //double *mult;
     int *workMap, *inttmp;
     
     // allocate A, B, and C --- note that you want these to be
@@ -40,10 +40,10 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < N; i++)
         B[i] = tmp[i];
     
-    tmp = (double *) malloc (sizeof(double ));
-    mult = (double *) malloc (sizeof(double *) * N);
-    for (i = 0; i < N; i++)
-        mult[i] = tmp[i];
+    //tmp = (double *) malloc (sizeof(double ));
+    //mult = (double *) malloc (sizeof(double *) * N);
+    //for (i = 0; i < N; i++)
+    //    mult[i] = tmp[i];
 
     inttmp = (int *) malloc (sizeof(int ));
     workMap = (int *) malloc (sizeof(int *) * N);
@@ -132,28 +132,23 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
 
-    for(k = 0; k < N; k++){
+    double mult = 0.0;
+    for(k = 0; k < N-1; k++){
         if(myrank == 0){
             printf("Iteration %d\n",k);
+        }
+        for(i = k+1; i < N; i++){
+            if(workMap[i] == myrank){
+                mult = A[i][k]/A[k][k];
+                for(j = 0; j < N; j++){
+                    A[i][j] = A[i][j] - mult*A[k][j];
+                }
+                B[i] = B[i]- mult*B[k];
+            }
         }
         printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
         MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
-        for(i = k+1; i < N; i++){
-            if(workMap[i] == myrank){
-                mult[i] = A[i][k]/A[k][k];
-            }
-        }
-        for(i = k+1; i < N; i++){
-            if(workMap[i] == myrank){
-                for(j = 0; j < N; j++){
-                    A[i][j] = A[i][j] - mult[i]*A[k][j];
-                }
-                B[i] = B[i]- mult[i]*B[k];
-            }
-            
-        }
-        MPI_Barrier(MPI_COMM_WORLD);
     }
 
 
