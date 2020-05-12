@@ -178,8 +178,6 @@ int main(int argc, char *argv[]) {
         else{// everyone else recieves updated B[k] from worker
             MPI_Recv(&B[k], 1, MPI_DOUBLE, workMap[k], TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
-        //MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
-        //MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
     }
 
     // only share final work if running in parallel
