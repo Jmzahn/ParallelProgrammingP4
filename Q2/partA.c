@@ -129,6 +129,7 @@ int main(int argc, char *argv[]) {
         }
         printf("Made workMap.\n");
     }
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
 
     for(k = 0; k < N; k++){
