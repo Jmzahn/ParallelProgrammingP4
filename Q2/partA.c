@@ -83,6 +83,7 @@ int main(int argc, char *argv[]) {
 
     // send each node its piece of A -- note could be done via MPI_Scatter
     if (myrank == 0) {
+        printf("Starting initital communication.\n");
         numElements = N * N;
         for (i=1; i<numnodes; i++) {
             MPI_Send(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
@@ -102,6 +103,9 @@ int main(int argc, char *argv[]) {
     }
     else{
         MPI_Recv(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    if(myrank == 0){
+        printf("Done with initital communication.\nStarting work.\n");
     }
     
     // do the work
@@ -144,6 +148,7 @@ int main(int argc, char *argv[]) {
 
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
+        printf("Starting final communication.\n");
         numElements = N * N;
         for (i=1; i<numnodes; i++) {
             MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
@@ -161,6 +166,9 @@ int main(int argc, char *argv[]) {
     }
     else{
         MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+    }
+    if(myrank == 0){
+        printf("Done with final communication.\nStarting back prop.\n");
     }
 
     //master does back prop
