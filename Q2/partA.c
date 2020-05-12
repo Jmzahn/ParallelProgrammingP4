@@ -147,8 +147,6 @@ int main(int argc, char *argv[]) {
         //    printf("Iteration %d\n",k);
         //}
         //printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
-        MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
-        MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         for(i = k+1; i < N; i++){
             if(workMap[i] == myrank){
                 mult = A[i][k]/A[k][k];
@@ -158,6 +156,8 @@ int main(int argc, char *argv[]) {
                 B[i] = B[i]- mult*B[k];
             }
         }
+        MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
     }
 
     //Synchronize at end of work
