@@ -127,9 +127,6 @@ int main(int argc, char *argv[]) {
         printf("Made workMap.\n");
     }
 
-    //Synchronize so that the correct/completed workMap can be sent to all processes
-    MPI_Barrier(MPI_COMM_WORLD);
-
     //send everyone workMap -- note can be done with MPI_Bcast
     if (myrank == 0){
         numElements = N;
