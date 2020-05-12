@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
     //Fill A and B with random data
     if (myrank == 0) {
         srand(time(NULL));
-        
         for (i=0; i<N; i++) {
             for (j=0; j<N; j++) {
                 A[i][j] = (float)rand() / 32768.0;
@@ -74,6 +73,7 @@ int main(int argc, char *argv[]) {
 
     //Make sure work can be evenly handed out
     stripSize = N/numnodes;
+    //if stripSize is invalid yell and quit
     if(N % numnodes != 0){
         MPI_Finalize();
         if(myrank == 0){
@@ -82,6 +82,7 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
     else{
+        //if stripSize is valid print it out
         if(myrank == 0){
             printf("stripSize: %d\n",stripSize);
         }
@@ -100,23 +101,22 @@ int main(int argc, char *argv[]) {
             MPI_Send(&(A[0][0]), numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
-    else {  // receive my part of A
+    else{   // receive A
         MPI_Recv(&(A[0][0]), N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
     // everyone gets B -- note could be done via MPI_Bcast
-    //MPI_Bcast(B[0], N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (myrank == 0){
         numElements = N;
         for (i=1; i<numnodes; i++) {
             MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
-    else{
+    else{   // receive B
         MPI_Recv(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
 
-    //Divide the work
+    // Divide the work
     if(myrank == 0){
         for(i = 0; i < N; i++){
             workMap[i] = i % numnodes;
@@ -124,18 +124,18 @@ int main(int argc, char *argv[]) {
         printf("Made workMap.\n");
     }
 
-    //send everyone workMap -- note can be done with MPI_Bcast
+    // send everyone workMap -- note can be done with MPI_Bcast
     if (myrank == 0){
         numElements = N;
         for (i=1; i<numnodes; i++) {
             MPI_Send(&workMap[0], numElements, MPI_INT, i, TAG, MPI_COMM_WORLD);
         }
     }
-    else{
+    else{   //recieve workMap
         MPI_Recv(&workMap[0], N, MPI_INT, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
-    //Announce end of communication
+    // Announce end of communication
     if(myrank == 0){
         printf("Done with initital communication.\nStarting work.\n");
     }
@@ -160,60 +160,40 @@ int main(int argc, char *argv[]) {
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
     }
 
-    //Synchronize at end of work
-    MPI_Barrier(MPI_COMM_WORLD);
+    // only share final work if running in parallel
+    if(numnodes>1){
+        // Synchronize at end of work so we know final worker has completed loop
+        MPI_Barrier(MPI_COMM_WORLD);
 
-    //master recieves final worker's A
-    if(myrank==0){
-        printf("Starting final communication.\n");
-        numElements = N * N;
-        MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        
+        // master recieves final worker's A
+        if(myrank==0){
+            printf("Starting final communication.\n");
+            numElements = N * N;
+            MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        }
+        else if(myrank==numnodes-1){
+            MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        }
+
+        // master recieves final worker's B
+        if(myrank==0){
+            printf("Starting final communication.\n");
+            numElements = N * N;
+            MPI_Recv(&B[0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+        }
+        else if(myrank==numnodes-1){
+            MPI_Send(&B[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        }
+
+        // announce end of communication
+        if(myrank == 0){
+            printf("Done with final communication.\nStarting back prop.\n");
+        }
     }
-    else if(myrank==numnodes-1){
-        MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    }
 
-    //master recieves final worker's B
-    if(myrank==0){
-        printf("Starting final communication.\n");
-        numElements = N * N;
-        MPI_Recv(&B[0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        
-    }
-    else if(myrank==numnodes-1){
-        MPI_Send(&B[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    }
-
-    // master receives A from workers  -- note could be done via MPI_Gather
-    //if (myrank == 0){
-    //    printf("Starting final communication.\n");
-    //    numElements = N * N;
-    //    for (i=1; i<numnodes; i++) {
-    //        MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //    }
-    //}
-    //else { // send my contribution to A
-    //    MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    //}
-
-    ////Send B
-    //if (myrank == 0){
-    //    numElements = N;
-    //    for (i=1; i<numnodes; i++) {
-    //        MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //    }
-    //}
-    //else{
-    //    MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
-    //}
-
-    ////announce end of communication
-    //if(myrank == 0){
-    //    printf("Done with final communication.\nStarting back prop.\n");
-    //}
-
-    //master does back prop
+    // master does back prop
     if(myrank == 0){
         X[N-1]=B[N-1]/A[N-1][N-1];
         for(i = N-2; i >= 0; i--){
@@ -231,7 +211,7 @@ int main(int argc, char *argv[]) {
         printf("Execution Time is %f (seconds)\n", endTime-startTime);
     }
     
-    // print out matrix here, if I'm the master
+    // print output matrix here, if I'm the master
     if (myrank == 0 && N < 10) {
         printf("\nX:\n");
         for (i=0; i<N; i++) {
