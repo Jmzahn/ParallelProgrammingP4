@@ -171,6 +171,9 @@ dmypy.json
 
 Q2/core.*
 Q2/machinefile.*
+!Q2/machinefile.1387331
+!Q2/machinefile.1387330
+!Q2/machinefile.1387333
 Q2/partA
 Q2/partA.exe
 Q2/partA.o
