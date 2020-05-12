@@ -1,6 +1,0 @@
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
-./mpi_matrixmul.exe: symbol lookup error: /opt/intel/compilers_and_libraries_2018.3.222/linux/mpi/intel64/lib/libmpifort.so.12: undefined symbol: MPI_UNWEIGHTED
