@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     
     N = atoi(argv[1]);
     double mult[N];
-    int workMap, inttmp;
+    int *workMap, *inttmp;
     
     // allocate A, B, and C --- note that you want these to be
     // contiguously allocated.  Workers need less memory allocated.
