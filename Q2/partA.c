@@ -163,6 +163,28 @@ int main(int argc, char *argv[]) {
     //Synchronize at end of work
     MPI_Barrier(MPI_COMM_WORLD);
 
+    //master recieves final worker's A
+    if(myrank==0){
+        printf("Starting final communication.\n");
+        numElements = N * N;
+        MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        
+    }
+    else if(myrank==numnodes-1){
+        MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+    }
+
+    //master recieves final worker's B
+    if(myrank==0){
+        printf("Starting final communication.\n");
+        numElements = N * N;
+        MPI_Recv(&B[0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        
+    }
+    else if(myrank==numnodes-1){
+        MPI_Send(&B[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+    }
+
     // master receives A from workers  -- note could be done via MPI_Gather
     //if (myrank == 0){
     //    printf("Starting final communication.\n");
