@@ -178,7 +178,6 @@ int main(int argc, char *argv[]) {
 
         // master recieves final worker's B
         if(myrank==0){
-            printf("Starting final communication.\n");
             numElements = N;
             MPI_Recv(&B[0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -189,12 +188,13 @@ int main(int argc, char *argv[]) {
 
         // announce end of communication
         if(myrank == 0){
-            printf("Done with final communication.\nStarting back prop.\n");
+            printf("Done with final communication.\n");
         }
     }
 
     // master does back prop
     if(myrank == 0){
+        printf("Starting back prop.\n");
         X[N-1]=B[N-1]/A[N-1][N-1];
         for(i = N-2; i >= 0; i--){
             sum=0.0;
