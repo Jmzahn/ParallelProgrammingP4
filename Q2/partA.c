@@ -99,11 +99,11 @@ int main(int argc, char *argv[]) {
         printf("Starting initital communication.\n");
         numElements = N * N;
         for (i=1; i<numnodes; i++) {
-            MPI_Send(&A[0][0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
+            MPI_Send(&(A[0][0]), numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else {  // receive my part of A
-        MPI_Recv(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&(A[0][0]), N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
     // everyone gets B
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
             printf("Iteration %d\n",k);
         }
         printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
-        MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
+        MPI_Bcast(&(A[k][k]), N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         for(i = k+1; i < N; i++){
             if(workMap[i] == myrank){
@@ -149,7 +149,6 @@ int main(int argc, char *argv[]) {
                 B[i] = B[i]- mult*B[k];
             }
         }
-        MPI_Barrier(MPI_COMM_WORLD);
     }
 
 
