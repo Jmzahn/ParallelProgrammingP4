@@ -16,10 +16,9 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     
     N = atoi(argv[1]);
-    //double *mult;
     int *workMap, *inttmp;
     
-    // allocate A, B, and C --- note that you want these to be
+    // allocate A, B, workMap, and X --- note that you want these to be
     // contiguously allocated.  Workers need less memory allocated.
 
     tmp = (double *) malloc (sizeof(double ) * N * N);
@@ -31,11 +30,6 @@ int main(int argc, char *argv[]) {
     B = (double *) malloc (sizeof(double *) * N);
     for (i = 0; i < N; i++)
         B[i] = tmp[i];
-    
-    //tmp = (double *) malloc (sizeof(double ));
-    //mult = (double *) malloc (sizeof(double *) * N);
-    //for (i = 0; i < N; i++)
-    //    mult[i] = tmp[i];
 
     inttmp = (int *) malloc (sizeof(int ));
     workMap = (int *) malloc (sizeof(int *) * N);
@@ -49,16 +43,15 @@ int main(int argc, char *argv[]) {
             X[i] = tmp[i];
             X[i] = 0.0;
     }
-    //else {
-    //    tmp = (double *) malloc (sizeof(double ) * N / numnodes);
-    //    X = (double *) malloc (sizeof(double ) * N / numnodes);
-    //    for (i = 0; i < N / numnodes; i++)
-    //        X[i] = &tmp[i];
-    //}
+
+    //free memory
+    free(tmp);
+    free(inttmp);
     
+    //Fill A and B with random data
     if (myrank == 0) {
         srand(time(NULL));
-        // initialize A and B
+        
         for (i=0; i<N; i++) {
             for (j=0; j<N; j++) {
                 A[i][j] = (float)rand() / 32768.0;
@@ -67,6 +60,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    //Print inputs if N<10
     if (myrank == 0 && N < 10) {
         printf("A:\n");
         for (i=0; i<N; i++) {
@@ -81,6 +75,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    //Make sure work can be evenly handed out
     stripSize = N/numnodes;
     if(N % numnodes != 0){
         MPI_Finalize();
@@ -100,7 +95,7 @@ int main(int argc, char *argv[]) {
         startTime = MPI_Wtime();
     }
 
-    // send each node its piece of A -- note could be done via MPI_Scatter
+    // send each node A -- note could be done via MPI_Bcast
     if (myrank == 0) {
         printf("Starting initital communication.\n");
         numElements = N * N;
@@ -123,21 +118,24 @@ int main(int argc, char *argv[]) {
     else{
         MPI_Recv(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
-    if(myrank == 0){
-        printf("Done with initital communication.\nStarting work.\n");
-    }
-    
-    // do the work
-    //printf("%d: numnodes: %d\n",myrank,numnodes);
+
+    //Divide the work
     if(myrank == 0){
         for(i = 0; i < N; i++){
             workMap[i] = i % numnodes;
         }
         printf("Made workMap.\n");
     }
+    //Synchronize so that the correct/completed workMap can be sent to all processes
     MPI_Barrier(MPI_COMM_WORLD);
     MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
+    
+    //Announce end of communication
+    if(myrank == 0){
+        printf("Done with initital communication.\nStarting work.\n");
+    }
 
+    // do the work
     double mult = 0.0;
     for(k = 0; k < N-1; k++){
         //if(myrank == 0){
@@ -156,20 +154,7 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
-
-    //for (k = myrank; k<N; k+= numnodes) {
-    //    for (i = k+1; i<N; i++){
-    //        A[i][k] /= A[k][k];
-    //        B[i] -= A[i][k]*B[k];
-    //    }
-    //    for (i = k+1; i<N; i++) {
-    //        for (j = k+1; j<N; j++) {
-    //        	A[i][j] -= A[i][k] * A[k][j];
-    //        }
-    //    }
-    //    MPI_Barrier(MPI_COMM_WORLD);
-    //}
+    //Synchronize at end of work
     MPI_Barrier(MPI_COMM_WORLD);
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
@@ -221,7 +206,15 @@ int main(int argc, char *argv[]) {
         }
         printf("\n");
     }
-    
+
+    //free memory
+    free(&A[0]);
+    free(A);
+    free(&B[0]);
+    if (myrank==0){
+        free(&X[0]);
+    }
+    free(&workMap[0]);
     MPI_Finalize();
     return 0;
 }
