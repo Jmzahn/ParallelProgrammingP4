@@ -149,6 +149,7 @@ int main(int argc, char *argv[]) {
                 B[i] = B[i]- mult*B[k];
             }
         }
+        MPI_Barrier(MPI_COMM_WORLD);
     }
 
 
