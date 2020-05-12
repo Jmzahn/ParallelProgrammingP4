@@ -120,6 +120,7 @@ int main(int argc, char *argv[]) {
         if(myrank == 0){
             printf("Iteration %d\n",k);
         }
+        printf("%d : k=%d map[k]= %d\n",myrank,k,workMap[k]);
         MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         for(i = k+1; i < N; i++){
