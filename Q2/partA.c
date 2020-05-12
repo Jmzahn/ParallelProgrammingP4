@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
         startTime = MPI_Wtime();
     }
 
-    // send each node A -- note could be done via MPI_Bcast
+    // everyone gets A -- note could be done via MPI_Bcast
     if (myrank == 0) {
         printf("Starting initital communication.\n");
         numElements = N * N;
@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
         MPI_Recv(&(A[0][0]), N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     
-    // everyone gets B
+    // everyone gets B -- note could be done via MPI_Bcast
     //MPI_Bcast(B[0], N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (myrank == 0){
         numElements = N;
@@ -126,9 +126,20 @@ int main(int argc, char *argv[]) {
         }
         printf("Made workMap.\n");
     }
+
     //Synchronize so that the correct/completed workMap can be sent to all processes
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
+
+    //send everyone workMap -- note can be done with MPI_Bcast
+    if (myrank == 0){
+        numElements = N;
+        for (i=1; i<numnodes; i++) {
+            MPI_Send(&workMap[0], numElements, MPI_INT, i, TAG, MPI_COMM_WORLD);
+        }
+    }
+    else{
+        MPI_Recv(&workMap[0], N, MPI_INT, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
     
     //Announce end of communication
     if(myrank == 0){
@@ -154,8 +165,10 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+
     //Synchronize at end of work
     MPI_Barrier(MPI_COMM_WORLD);
+
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
         printf("Starting final communication.\n");
@@ -167,6 +180,7 @@ int main(int argc, char *argv[]) {
     else { // send my contribution to A
         MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
+
     //Send B
     if (myrank == 0){
         numElements = N;
@@ -177,6 +191,8 @@ int main(int argc, char *argv[]) {
     else{
         MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
+
+    //announce end of communication
     if(myrank == 0){
         printf("Done with final communication.\nStarting back prop.\n");
     }
@@ -215,6 +231,8 @@ int main(int argc, char *argv[]) {
         free(&X[0]);
     }
     free(&workMap[0]);
+
+    
     MPI_Finalize();
     return 0;
 }
