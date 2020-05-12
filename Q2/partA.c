@@ -146,6 +146,7 @@ int main(int argc, char *argv[]) {
                 B[i] = B[i]- mult*B[k];
             }
         }
+        MPI_Barrier(MPI_COMM_WORLD);
         printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
         MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
