@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
     
     N = atoi(argv[1]);
     double mult[N];
-    double workMap[N];
-
+    int workMap, inttmp;
+    
     // allocate A, B, and C --- note that you want these to be
     // contiguously allocated.  Workers need less memory allocated.
 
@@ -41,7 +41,11 @@ int main(int argc, char *argv[]) {
     for (i = 0; i < N; i++)
         B[i] = tmp[i];
     
-    
+    inttmp = (int *) malloc (sizeof(int ));
+    workMap = (int *) malloc (sizeof(int *) * N);
+    for (i = 0; i < N; i++)
+        workMap[i] = inttmp[i];
+
     if (myrank == 0) {
         tmp = (double *) malloc (sizeof(double ));
         X = (double *) malloc (sizeof(double *) * N);
@@ -75,6 +79,11 @@ int main(int argc, char *argv[]) {
         }
         exit(-1);
     }
+    else{
+        if(myrank == 0){
+            printf("stripSize: %d\n",stripSize);
+        }
+    }
 
     // start timer
     if (myrank == 0) {
@@ -96,31 +105,33 @@ int main(int argc, char *argv[]) {
     // everyone gets B
     //MPI_Bcast(B[0], N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (myrank == 0){
-        numElements = stripSize;
+        numElements = N;
         for (i=1; i<numnodes; i++) {
             MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
         }
     }
     else{
-        MPI_Recv(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
     if(myrank == 0){
         printf("Done with initital communication.\nStarting work.\n");
     }
     
     // do the work
-    for(i = 0; i < N; i++){
-        workMap[i] = i % numnodes;
-    }
+    printf("%d: numnodes: %d",myrank,numnodes);
     if(myrank == 0){
+        for(i = 0; i < N; i++){
+            workMap[i] = i % numnodes;
+        }
         printf("Made workMap.\n");
     }
+    MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
 
     for(k = 0; k < N; k++){
         if(myrank == 0){
             printf("Iteration %d\n",k);
         }
-        printf("%d : k=%d map[k]= %d\n",myrank,k,workMap[k]);
+        printf("%d : k= %d, workMap[k]= %d\n",myrank,k,workMap[k]);
         MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         for(i = k+1; i < N; i++){
@@ -166,13 +177,13 @@ int main(int argc, char *argv[]) {
     }
     //Send B
     if (myrank == 0){
-        numElements = stripSize;
+        numElements = N;
         for (i=1; i<numnodes; i++) {
             MPI_Recv(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
     }
     else{
-        MPI_Send(&B[0], stripSize, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+        MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
     }
     if(myrank == 0){
         printf("Done with final communication.\nStarting back prop.\n");
