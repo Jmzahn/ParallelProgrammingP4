@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
     //    }
     //    MPI_Barrier(MPI_COMM_WORLD);
     //}
-
+    MPI_Barrier(MPI_COMM_WORLD);
     // master receives A from workers  -- note could be done via MPI_Gather
     if (myrank == 0){
         printf("Starting final communication.\n");
