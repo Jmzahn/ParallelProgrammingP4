@@ -22,18 +22,10 @@ int main(int argc, char *argv[]) {
     // allocate A, B, and C --- note that you want these to be
     // contiguously allocated.  Workers need less memory allocated.
 
-    if (myrank == 0) {
-        tmp = (double *) malloc (sizeof(double ) * N * N);
-        A = (double **) malloc (sizeof(double *) * N);
-        for (i = 0; i < N; i++)
-            A[i] = &tmp[i * N];
-    }
-    else {
-        tmp = (double *) malloc (sizeof(double ) * N * N / numnodes);
-        A = (double **) malloc (sizeof(double *) * N / numnodes);
-        for (i = 0; i < N / numnodes; i++)
-            A[i] = &tmp[i * N];
-    }
+    tmp = (double *) malloc (sizeof(double ) * N * N);
+    A = (double **) malloc (sizeof(double *) * N);
+    for (i = 0; i < N; i++)
+        A[i] = &tmp[i * N];
     
     tmp = (double *) malloc (sizeof(double ));
     B = (double *) malloc (sizeof(double *) * N);
