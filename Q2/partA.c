@@ -67,6 +67,20 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if (myrank == 0 && N < 10) {
+        printf("A:\n");
+        for (i=0; i<N; i++) {
+            for(j=0; j<N; j++){
+                printf("%f ", A[i][j]);
+            }
+            printf("\n");
+        }
+        printf("\nB:\n");
+        for (i=0; i<N; i++) {
+            printf("%f ", B[i]);
+        }
+    }
+
     stripSize = N/numnodes;
     if(N % numnodes != 0){
         MPI_Finalize();
