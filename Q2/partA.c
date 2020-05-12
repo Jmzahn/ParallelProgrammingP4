@@ -112,11 +112,17 @@ int main(int argc, char *argv[]) {
     for(i = 0; i < N; i++){
         workMap[i] = i % numnodes;
     }
+    if(myrank == 0){
+        printf("Made workMap.\n");
+    }
 
     for(k = 0; k < N; k++){
+        if(myrank == 0){
+            printf("Iteration %d\n",k);
+        }
         MPI_Bcast(&A[k][k], N-k, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
         MPI_Bcast(&B[k], 1, MPI_DOUBLE, workMap[k], MPI_COMM_WORLD);
-        for(i= k+1; i < N; i++){
+        for(i = k+1; i < N; i++){
             if(workMap[i] == myrank){
                 mult[i] = A[i][k]/A[k][k];
             }
@@ -124,9 +130,9 @@ int main(int argc, char *argv[]) {
         for(i = k+1; i < N; i++){
             if(workMap[i] == myrank){
                 for(j = 0; j < N; j++){
-                    A[i][j] -= mult[i]*A[k][j];
+                    A[i][j] = A[i][j] - mult[i]*A[k][j];
                 }
-                B[i]-= mult[i]*B[k];
+                B[i] = B[i]- mult[i]*B[k];
             }
             
         }
