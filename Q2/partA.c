@@ -169,22 +169,22 @@ int main(int argc, char *argv[]) {
         if(myrank==0){
             printf("Starting final communication.\n");
             numElements = N * N;
-            MPI_Recv(&A[0][0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPI_Recv(&(A[0][0]), numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         }
         else if(myrank==numnodes-1){
-            MPI_Send(&A[0][0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+            MPI_Send(&(A[0][0]), N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
         }
 
         // master recieves final worker's B
         if(myrank==0){
             printf("Starting final communication.\n");
-            numElements = N * N;
+            numElements = N;
             MPI_Recv(&B[0], numElements, MPI_DOUBLE, numnodes-1, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         }
         else if(myrank==numnodes-1){
-            MPI_Send(&B[0], N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
+            MPI_Send(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD);
         }
 
         // announce end of communication
