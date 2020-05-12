@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &numnodes);
     
     N = atoi(argv[1]);
-    double mult[N];
+    double *mult;
     int *workMap, *inttmp;
     
     // allocate A, B, and C --- note that you want these to be
@@ -35,12 +35,16 @@ int main(int argc, char *argv[]) {
             A[i] = &tmp[i * N];
     }
     
-    
     tmp = (double *) malloc (sizeof(double ));
     B = (double *) malloc (sizeof(double *) * N);
     for (i = 0; i < N; i++)
         B[i] = tmp[i];
     
+    tmp = (double *) malloc (sizeof(double ));
+    mult = (double *) malloc (sizeof(double *) * N);
+    for (i = 0; i < N; i++)
+        mult[i] = tmp[i];
+
     inttmp = (int *) malloc (sizeof(int ));
     workMap = (int *) malloc (sizeof(int *) * N);
     for (i = 0; i < N; i++)
@@ -118,7 +122,7 @@ int main(int argc, char *argv[]) {
     }
     
     // do the work
-    printf("%d: numnodes: %d",myrank,numnodes);
+    printf("%d: numnodes: %d\n",myrank,numnodes);
     if(myrank == 0){
         for(i = 0; i < N; i++){
             workMap[i] = i % numnodes;
