@@ -95,28 +95,9 @@ int main(int argc, char *argv[]) {
 
     // everyone gets A 
     MPI_Bcast(&(A[0][0]), N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    //if (myrank == 0) {
-    //    printf("Starting initital communication.\n");
-    //    numElements = N * N;
-    //    for (i=1; i<numnodes; i++) {
-    //        MPI_Send(&(A[0][0]), numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
-    //    }
-    //}
-    //else{   // receive A
-    //    MPI_Recv(&(A[0][0]), N * N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //}
     
     // everyone gets B 
     MPI_Bcast(&B[0], N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    //if (myrank == 0){
-    //    numElements = N;
-    //    for (i=1; i<numnodes; i++) {
-    //        MPI_Send(&B[0], numElements, MPI_DOUBLE, i, TAG, MPI_COMM_WORLD);
-    //    }
-    //}
-    //else{   // receive B
-    //    MPI_Recv(&B[0], N, MPI_DOUBLE, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //}
 
     // Divide the work
     if(myrank == 0){
@@ -126,17 +107,8 @@ int main(int argc, char *argv[]) {
         printf("Made workMap.\n");
     }
 
-    // send everyone workMap -- note can be done with MPI_Bcast
+    // send everyone workMap
     MPI_Bcast(&workMap[0], N, MPI_INT, 0, MPI_COMM_WORLD);
-    //if (myrank == 0){
-    //    numElements = N;
-    //    for (i=1; i<numnodes; i++) {
-    //        MPI_Send(&workMap[0], numElements, MPI_INT, i, TAG, MPI_COMM_WORLD);
-    //    }
-    //}
-    //else{   //recieve workMap
-    //    MPI_Recv(&workMap[0], N, MPI_INT, 0, TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    //}
     
     // Announce end of communication
     if(myrank == 0){
